@@ -17,8 +17,8 @@ type Subcal struct {
 
 // Subscribe user to dynamic calendar
 //
-//	@param {string} calendarID - of the calendar for subscription
-//	@param {string} user
+//	@param {string} calendarID - of the calendar for subscription. Can be retrived from Google Calendar => Calendar settings.
+//	@param {string} user - a valid google email address under the same domain of the Service Account client
 //	@return {bool} if success
 func SubscribeUserToCalendar(ctx context.Context, config *jwt.Config, calendarID string, user string) bool {
 	fmt.Println("Subscribe User To Calendar...")

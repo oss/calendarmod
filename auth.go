@@ -10,8 +10,6 @@ import (
 	"golang.org/x/oauth2/google"
 	"golang.org/x/oauth2/jwt"
 	"google.golang.org/api/calendar/v3"
-	"google.golang.org/api/drive/v2"
-	"google.golang.org/api/gmail/v1"
 )
 
 // Client based on Service Account to connect to Google API
@@ -48,21 +46,12 @@ func (auth *AuthentificationClient) Client() *http.Client {
 //	@return {*AuthentificationClient}
 //	Create a global var auth *calendarservice.AuthentificationClient to access auth context and config
 //
-//	@param {bool} useDrive- true if need to use Google Drive API
-//	@param {bool} useGmail- true if need to use Google Gmail API
-//	@param {bool} useCalendar- true if need to use Google Calendar API
-func SetUpSVAAuth(serviceAccountJSON []byte, useDrive bool, useGmail bool, useCalendar bool) *AuthentificationClient {
+//	@param {bool} useCalendar- true if need to use Google Calendar API, should always be true to use subscription service
+func SetUpSVAAuth(serviceAccountJSON []byte, useCalendar bool) *AuthentificationClient {
 	// This is a variable needed for all http actions with the google API
 	ctx := context.Background()
 
 	var scope []string
-	if useDrive {
-		scope = append(scope, drive.DriveScope)
-	}
-	if useGmail {
-		scope = append(scope, gmail.GmailReadonlyScope)
-	}
-
 	if useCalendar {
 		scope = append(scope, calendar.CalendarScope)
 	}
