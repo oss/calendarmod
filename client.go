@@ -1,7 +1,6 @@
 package calendarmod
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -58,7 +57,8 @@ func SetUpSVAAuth(serviceAccountJSON []byte, useCalendar bool) *Client {
 
 	config, err := google.JWTConfigFromJSON(serviceAccountJSON, scope...)
 	if err != nil {
-		log.Fatalf("Could not create config for service account=> {%s}", err)
+		log.Printf("Could not create config for service account=> {%s}", err)
+		return nil
 	}
 
 	client := config.Client(oauth2.NoContext)
@@ -66,6 +66,6 @@ func SetUpSVAAuth(serviceAccountJSON []byte, useCalendar bool) *Client {
 	// initilize authentification client
 	calendarclient = &Client{ctxPtr: &ctx, configPtr: &config, clientPtr: &client}
 
-	fmt.Println("Authentification sets up")
+	log.Println("Authentification sets up")
 	return calendarclient
 }
