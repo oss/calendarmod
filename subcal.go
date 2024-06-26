@@ -1,7 +1,7 @@
 package calendarmod
 
 import (
-	"fmt"
+	"log"
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
@@ -20,23 +20,28 @@ type Subcal struct {
 //	@param {string} calendarID - of the calendar for subscription. Can be retrived from Google Calendar => Calendar settings.
 //	@param {string} user - a valid google email address under the same domain of the Service Account client
 //	@return {bool} if success
-func SubscribeUserToCalendar(ctx context.Context, config *jwt.Config, calendarID string, user string) bool {
-	fmt.Println("Subscribe User To Calendar...")
-	fmt.Printf("Calendar ID: %s\n", calendarID)
-	fmt.Printf("user: %s\n", user)
-	serviceClient := UserInitiateService(ctx, config, user)
+func (c *Client) SubscribeUserToCalendar(calendarID string, user string) bool {
+	log.Println("Subscribe User To Calendar...")
+	log.Printf("Calendar ID: %s\n", calendarID)
+	log.Printf("user: %s\n", user)
+	serviceClient := UserInitiateService(c.Context(), c.Config(), user)
+
+	if serviceClient == nil {
+		log.Printf("Fail to initiate service client for the %s\n", user)
+		return false
+	}
 	calendarListEntry := GetCalendarListEntry(calendarID)
 
 	// create CalendarListService for user
 	calendarListService := calendar.NewCalendarListService(serviceClient)
 	if calendarListService == nil {
-		fmt.Printf("The calendar Service for user: %s is null\n", user)
+		log.Printf("The calendar Service for user: %s is null\n", user)
 		return false
 	}
 	_, err := calendarListService.Insert(calendarListEntry).Do()
 	if err != nil {
-		fmt.Println(err)
-		panic(err)
+		log.Println(err)
+		return false
 	}
 	return true
 }
@@ -53,7 +58,7 @@ func UserInitiateService(ctx context.Context, config *jwt.Config, user string) *
 	client := config.Client(oauth2.NoContext)
 	calendarClient, err := calendar.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	return calendarClient
 }
@@ -84,7 +89,7 @@ func GetCalendarListEntry(calendarID string) *calendar.CalendarListEntry {
 
 // 	userCalendarListEntry, err := calendarListClient.Insert(targetCalendarListEntry).Do()
 // 	if err != nil {
-// 		fmt.Println(err)
+// 		log.Println(err)
 // 		panic(err)
 // 	}
 // 	return userCalendarListEntry
