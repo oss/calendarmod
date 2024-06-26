@@ -25,7 +25,6 @@ func (c *Client) SubscribeUserToCalendar(calendarID string, user string) bool {
 	log.Printf("Calendar ID: %s\n", calendarID)
 	log.Printf("user: %s\n", user)
 	serviceClient := UserInitiateService(c.Context(), c.Config(), user)
-
 	if serviceClient == nil {
 		log.Printf("Fail to initiate service client for the %s\n", user)
 		return false
