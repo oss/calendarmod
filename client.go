@@ -42,11 +42,11 @@ func (auth *Client) Client() *http.Client {
 
 // Initialize authentification client with service account
 //
-//	@return {*AuthentificationClient}
-//	Create a global var auth *calendarservice.AuthentificationClient to access auth context and config
+//	@return {*Client}
+//	Create a global var auth *calendarservice.Client to access auth context and config
 //
 //	@param {bool} useCalendar- true if need to use Google Calendar API, should always be true to use subscription service
-func SetUpSVAAuth(serviceAccountJSON []byte, useCalendar bool) *Client {
+func SetUpSVAClient(serviceAccountJSON []byte, useCalendar bool) *Client {
 	// This is a variable needed for all http actions with the google API
 	ctx := context.Background()
 
