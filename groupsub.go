@@ -8,7 +8,7 @@ import (
 
 // Subscribe group of user to group of calendar
 //
-//	@param {string} userlist_path - path to the csv file with a list of users
+//	@param {string[]} userlist - list of valid Google emails of targeted users, in email format
 //	@param {string} calendarid - id of the calendar for the users to subscribe
 //	@paran {bool} success_user_file - (optional) whether to generate a file that stores a list of users that successfully subscribe to calendars
 //	@paran {string} success_user_path - (optional) path that points at success_user_file, default is "success_user_calendarid.csv" in current directory
@@ -16,43 +16,13 @@ import (
 //	@paran {string} fail_user_path - (optional)path to store FAILUSER_PATH,  default is current directory
 //
 //	@return {bool} if completed: true means process completed, false means process terminated due to error.
-func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist_path string,
+func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist []string,
 	success_user_file bool, success_user_path string, fail_user_file bool, fail_user_path string) bool {
-	usercsv, err := os.Open(userlist_path)
-	if err != nil {
-		log.Printf("Unable to open file: %v", err)
-	}
-	defer usercsv.Close()
-	// Create a new CSV reader to read usercsv
-	ur := csv.NewReader(usercsv)
-
-	// Skip the header row
-	_, err = ur.Read()
-	if err != nil {
-		log.Printf("Unable to read header row netid, please add a header row: %v", err)
-		return false
-	}
-
-	// Create user list
-	var users []string
-
-	// Read the users
-	for {
-		record, err := ur.Read()
-		if err != nil {
-			break
-		}
-
-		// Parse id
-		id := record[0]
-		// add userid to the list of users
-		users = append(users, id)
-	}
 
 	var successuserlist []string
 	var failuserlist []string
 
-	for _, u := range users {
+	for _, u := range userlist {
 		res := c.SubscribeUserToCalendar(u, calendarid)
 		if res {
 			successuserlist = append(successuserlist, u)
