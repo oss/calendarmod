@@ -29,8 +29,8 @@
 
 
 ### Version Update
-Make sure you are using one of the stable version 
-- **v0.1.7**: first stable version 
+Make sure you are using one of the stable version. Update to the newest minor version. 
+- **v0.1.8**: first stable version 
 
 
 <br>
