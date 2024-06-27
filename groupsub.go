@@ -83,6 +83,12 @@ func CreateOutputFile(filename string, userlist []string) bool {
 		log.Printf("Folder '%s' already exists.\n", output_folder)
 	}
 
+	// Change the current working directory to the new folder
+	err = os.Chdir(output_folder)
+	if err != nil {
+		log.Printf("Error changing directory: %v\n", err)
+		return false
+	}
 	// Create the output file
 	usercsv, err := os.Create(filename)
 	if err != nil {
