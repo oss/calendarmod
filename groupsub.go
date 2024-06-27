@@ -10,13 +10,14 @@ import (
 //
 //	@param {string[]} userlist - list of valid Google emails of targeted users, in email format
 //	@param {string} calendarid - id of the calendar for the users to subscribe
+//	@param {string} output_path - relative path to generate the output files
 //	@paran {bool} success_user_file - (optional) whether to generate a file that stores a list of users that successfully subscribe to calendars
 //	@paran {string} success_user_name - (optional) custume name for success_user_file, must be ".csv". Default is "success_user_calendarid.csv"
 //	@paran {bool} fail_user_file - (optional) whether to generate the file that stores a list of users that failed to subscribe to calendars
 //	@paran {string} fail_user_name - (optional) custume name for fail_user_file, must be ".csv". Default is "fail_user_calendarid.csv"
 //
 //	@return {bool} if completed: true means process completed, false means process terminated due to error.
-func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist []string,
+func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist []string, output_path string,
 	success_user_file bool, success_user_name string, fail_user_file bool, fail_user_name string) bool {
 
 	var successuserlist []string
@@ -38,7 +39,7 @@ func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist []
 			success_user_name = "success_user_" + calendarid + ".csv"
 		}
 
-		result := CreateOutputFile(success_user_name, successuserlist)
+		result := CreateOutputFile(output_path, success_user_name, successuserlist)
 		if !result {
 			log.Println("Error occured while trying to create success user file")
 		}
@@ -51,7 +52,7 @@ func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist []
 			fail_user_name = "fail_user_" + calendarid + ".csv"
 		}
 
-		result := CreateOutputFile(fail_user_name, failuserlist)
+		result := CreateOutputFile(output_path, fail_user_name, failuserlist)
 		if !result {
 			log.Println("Error occured while trying to create fail user file")
 		}
@@ -60,8 +61,7 @@ func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist []
 	return true
 }
 
-func CreateOutputFile(filename string, userlist []string) bool {
-	output_folder := "outputs"
+func CreateOutputFile(output_path string, filename string, userlist []string) bool {
 
 	// Get the current working directory
 	originalDir, err := os.Getwd()
@@ -70,21 +70,8 @@ func CreateOutputFile(filename string, userlist []string) bool {
 		return false
 	}
 
-	// Check if the folder already exists
-	if _, err := os.Stat(output_folder); os.IsNotExist(err) {
-		// Folder does not exist, so create it
-		err := os.Mkdir(output_folder, 0755)
-		if err != nil {
-			log.Printf("Error creating folder: %v\n", err)
-			return false
-		}
-		log.Printf("Folder '%s' created successfully.\n", output_folder)
-	} else {
-		log.Printf("Folder '%s' already exists.\n", output_folder)
-	}
-
-	// Change the current working directory to the new folder
-	err = os.Chdir(output_folder)
+	// Change the current working directory to the output path
+	err = os.Chdir(output_path)
 	if err != nil {
 		log.Printf("Error changing directory: %v\n", err)
 		return false
