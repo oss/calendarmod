@@ -141,7 +141,7 @@ SubscribeUserToCalendar subscribes a groups of users to a dynamic Google Calenda
 Depend on the setting, the function would generates two csv files with lists of successful and failed cases of user's calendar subscription. <br>
 The return boolean value indicates completion: true means process completed, false means process terminated due to error. This doesn't reflect the state of user subscription
 - *calendarid* can be retrived from Google Calendar => Calendar settings. 
-- *userlist_path* is the path of the cvs file with a list of users's emails, make sure the path ends with ".cvs" 
+- *userlist* is list of valid Google emails of targeted users, should be in email format 
 - *success_user_file* (optional) should be true/false, indicating whether to generate a file that stores a list of users that successfully subscribe to calendars. Default is false.
 - *success_user_path* (optional) is the path that points at *success_user_file*. Default is "success_user_calendarid.csv" in current directory
 - *fail_user_file* (optional) should be true/false, indicating whether to generate a file that stores a list of users that successfully subscribe to calendars. Default is false.
@@ -149,13 +149,13 @@ The return boolean value indicates completion: true means process completed, fal
 
 Exp:
 ```
-userlist_path:= "data/userlist.csv"
+userlist:= ["a@gamil.com", "b@gamil.com", "c@gamil.com"]
 calendarid:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
 success := calendarmod.SubscribeUserToCalendar(auth.Context(), auth.Config(), calendarid, userEmail)
 success_user_file := true
 success_user_path:= "data/success_users.csv"
 fail_user_file := true
-completed := calendarClient.SubscribeGroupToCalendar(userlist_path, calendarid, success_user_file, success_user_path, fail_user_file)
+completed := calendarClient.SubscribeGroupToCalendar(userlist, calendarid, success_user_file, success_user_path, fail_user_file)
 ```
 
 <br>
