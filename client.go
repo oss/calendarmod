@@ -12,41 +12,18 @@ import (
 )
 
 // Client based on Service Account to connect to Google API
-type Client struct {
-	ctxPtr    *context.Context
-	configPtr **jwt.Config
-	clientPtr **http.Client
+type CalendarClient struct {
+	ctx        context.Context
+	config     *jwt.Config
+	httpClient *http.Client
 }
 
-// global authentification client
-// Access through Context() and Config
-var calendarclient *Client
-
-// Return global context
-func (auth *Client) Context() context.Context {
-	ctx := *auth.ctxPtr
-	return ctx
-}
-
-// Return global config
-func (auth *Client) Config() *jwt.Config {
-	config := *auth.configPtr
-	return config
-}
-
-// Return service account client
-func (auth *Client) Client() *http.Client {
-	client := *auth.clientPtr
-	return client
-}
-
-// Initialize authentification client with service account
+// Initialize authentification client with service account to access Google API
 //
-//	@return {*Client}
-//	Create a global var auth *calendarservice.Client to access auth context and config
+//	@return {*CalendarClient}
 //
 //	@param {bool} useCalendar- true if need to use Google Calendar API, should always be true to use subscription service
-func SetUpSVAClient(serviceAccountJSON []byte, useCalendar bool) *Client {
+func SetUpSVAClient(serviceAccountJSON []byte, useCalendar bool) *CalendarClient {
 	// This is a variable needed for all http actions with the google API
 	ctx := context.Background()
 
@@ -64,8 +41,8 @@ func SetUpSVAClient(serviceAccountJSON []byte, useCalendar bool) *Client {
 	client := config.Client(oauth2.NoContext)
 
 	// initilize authentification client
-	calendarclient = &Client{ctxPtr: &ctx, configPtr: &config, clientPtr: &client}
+	calendarclient := &CalendarClient{ctx: ctx, config: config, httpClient: client}
 
-	log.Println("Authentification sets up")
+	log.Println("Client sets up")
 	return calendarclient
 }

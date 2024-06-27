@@ -4,26 +4,30 @@ import (
 	"encoding/csv"
 	"log"
 	"os"
-	"path/filepath"
 )
 
 // Subscribe group of user to group of calendar
 //
-//	@param {*os.File} usercsv - csv file with a list of users
+//	@param {string} userlist_path - path to the csv file with a list of users
 //	@param {string} calendarid - id of the calendar for the users to subscribe
-//	@paran {bool} SUCCESSUSER_FILE - (optional) whether to generate a file that stores a list of users that successfully subscribe to calendars
-//	@paran {*string} SUCCESSUSER_NAME - (optional) name of the SUCCESSUSER_FILE, default is "success_user_calendarid"
-//	@paran {*string} SUCCESSUSER_PATH- (optional)path to store SUCCESSUSER_FILE, default is current directory
-//	@paran {*string} FAILUSER_FAIL- (optional) whether to generate the file that stores a list of users that failed to subscribe to calendars
-//	@paran {*string} FAILUSER_NAME- (optional) name of the FAILUSER_FILE , default is "fail_user_calendarid"
-//	@paran {*string} FAILUSERUSER_PATH- (optional)path to store FAILUSER_PATH,  default is current directory
-func (c *Client) SubscribeGroupToCalendar(usercsv *os.File, calendarid string,
-	SUCCESSUSER_FILE bool, SUCCESSUSER_NAME string, SUCCESSUSER_PATH string,
-	FAILUSER_FILE bool, FAILUSER_NAME string, FAILUSER_PATH string) bool {
+//	@paran {bool} success_user_file - (optional) whether to generate a file that stores a list of users that successfully subscribe to calendars
+//	@paran {string} success_user_path - (optional) path that points at success_user_file, default is "success_user_calendarid.csv" in current directory
+//	@paran {bool} fail_user_file - (optional) whether to generate the file that stores a list of users that failed to subscribe to calendars
+//	@paran {string} fail_user_path - (optional)path to store FAILUSER_PATH,  default is current directory
+//
+//	@return {bool} if completed: true means process completed, false means process terminated due to error.
+func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist_path string,
+	success_user_file bool, success_user_path string, fail_user_file bool, fail_user_path string) bool {
+	usercsv, err := os.Open(userlist_path)
+	if err != nil {
+		log.Printf("Unable to open file: %v", err)
+	}
+	defer usercsv.Close()
 	// Create a new CSV reader to read usercsv
 	ur := csv.NewReader(usercsv)
+
 	// Skip the header row
-	_, err := ur.Read()
+	_, err = ur.Read()
 	if err != nil {
 		log.Printf("Unable to read header row netid, please add a header row: %v", err)
 		return false
@@ -58,20 +62,15 @@ func (c *Client) SubscribeGroupToCalendar(usercsv *os.File, calendarid string,
 	}
 
 	// create successful user file
-	if SUCCESSUSER_FILE {
+	if success_user_file {
 
 		// check and set name to default
-		if SUCCESSUSER_NAME == "" {
-			SUCCESSUSER_NAME = "success_user_" + calendarid + ".csv"
-		} else {
-			SUCCESSUSER_NAME = SUCCESSUSER_NAME + ".csv"
+		if success_user_path == "" {
+			success_user_path = "success_user_" + calendarid + ".csv"
 		}
 
-		// Combine directory path and file name
-		fullPath := filepath.Join(SUCCESSUSER_PATH, SUCCESSUSER_NAME)
-
 		// Create the output file
-		successusercsv, err := os.Create(fullPath)
+		successusercsv, err := os.Create(success_user_path)
 		if err != nil {
 			log.Printf("Unable to create output file: %v", err)
 		}
@@ -97,20 +96,15 @@ func (c *Client) SubscribeGroupToCalendar(usercsv *os.File, calendarid string,
 	}
 
 	// create successful user file
-	if FAILUSER_FILE {
+	if fail_user_file {
 
 		// check and set name to default
-		if FAILUSER_NAME == "" {
-			FAILUSER_NAME = "success_user_" + calendarid + ".csv"
-		} else {
-			FAILUSER_NAME = FAILUSER_NAME + ".csv"
+		if fail_user_path == "" {
+			fail_user_path = "fail_user_" + calendarid + ".csv"
 		}
 
-		// Combine directory path and file name
-		fullPath := filepath.Join(FAILUSER_PATH, FAILUSER_NAME)
-
 		// Create the output file
-		failusercsv, err := os.Create(fullPath)
+		failusercsv, err := os.Create(fail_user_path)
 		if err != nil {
 			log.Printf("Unable to create output file: %v", err)
 		}

@@ -2,9 +2,11 @@
 
 ## Table of Contents
 1. [Overview](#overview)
+    1. [Version Update](#version-update)
 2. [Getting started](#getting-started)
 3. [Usage](#usage)
     1. [Subscribe User to a Calendar in Go Project](#subscribe-user-to-a-calendar-in-go-project)
+    2. [Subscribe Group to a Calendar in Go Project](#subscribe-group-to-a-calendar-in-go-project)
 4. [Functions](#functions)
     1. [SetUpSVAAuth](#func-setupsvaauth)
     2. [SubscribeUserToCalendar](#func-subscribeusertocalendar)
@@ -21,8 +23,15 @@
 ## Overview
 **calendarmod** is a Go Package designed to facilitate Google Calendar services for Rutgers University. This module includes the following core functionality:
 
-1. Authentication Google API using a service account
-2. Subscirbe user to a calendar
+1. Authenticate Client for Google API using a service account
+2. Subscirbe user to a dynamic Google calendar
+3. Subscirbe a group of users to a dynamic Google calendar
+
+
+### Version Update
+Make sure you are using one of the stable version 
+- **v0.1.4**: first stable version 
+
 
 <br>
 <br>
@@ -58,12 +67,30 @@
 
 2. Create a authentification client based on the service account
     ```
-    auth = calendarmod.SetUpSVAAuth(serviceAccountJSON, true)
+    client := calendarmod.SetUpSVAClient(serviceAccountJSON, true)
     ```
 
 3. Subscribe the user to the calendars
     ```
-    success := calendarmod.SubscribeUserToCalendar(auth.Context(), auth.Config(), calendarId, userEmail)
+    success := client.SubscribeUserToCalendar(calendarid, userEmail)
+    ```
+
+#### Subscribe Group to a Calendar in Go Project
+1. Import the package
+    ```
+    import (
+	    "github.com/oss/calendarmod"
+    )
+    ```
+
+2. Create a authentification client based on the service account
+    ```
+    client := calendarmod.SetUpSVAClient(serviceAccountJSON, true)
+    ```
+
+3. Subscribe the user to the calendars
+    ```
+    success := client.SubscribeGroupToCalendar("users.csv", calendarid, true, "success_users.csv", true, "fail_users.csv")
     ```
 <br>
 <br>
@@ -71,11 +98,11 @@
 ---
 ## Functions
 
-#### func SetUpSVAAuth
+#### func SetUpSVAClient
 ```
-func SetUpSVAAuth(serviceAccountJSON []byte, useCalendar bool) *AuthentificationClient
+func SetUpSVAClient(serviceAccountJSON []byte, useCalendar bool) *CalendarClient
 ```
-SetUpSVAAuth initialize authentification client with service account and returns AuthentificationClient with context and config. 
+SetUpSVAClient initialize authentification client with service account and returns CalendarClient with context and config. 
 - *useCalendar* should always to be set to true to use Calendar services. 
 - To authentificate, make sure to set up all necessary permissions for the Google Service account.
 
@@ -92,18 +119,45 @@ auth := calendarmod.SetUpSVAAuth(serviceAccountJSON, true)
 
 #### func SubscribeUserToCalendar
 ```
-func SubscribeUserToCalendar(ctx context.Context, config *jwt.Config, calendarID string, user string) bool 
+func (c *CalendarClient) SubscribeUserToCalendar(calendarid string, user string) bool 
 ```
-SubscribeUserToCalendar subscribes user to a dynamic Google Calendar. 
-- *calendarID* can be retrived from Google Calendar => Calendar settings. 
-- *User* must be a a valid google email address under the same domain of the Service Account client. 
+SubscribeUserToCalendar subscribes user to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*
+- *calendarid* can be retrived from Google Calendar => Calendar settings. 
+- *user* must be a a valid google email address under the same domain of the Service Account client. 
 
 Exp:
 ```
-calendarId:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
+calendarid:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
 userEmail:= "user@gmail.com"
-success := calendarmod.SubscribeUserToCalendar(auth.Context(), auth.Config(), calendarId, userEmail)
+success := calendarmod.SubscribeUserToCalendar(calendarid, userEmail)
 ```
+
+#### func SubscribeUserToCalendar
+```
+func (c *CalendarClient) SubscribeGroupToCalendar(userlist_path string, calendarid string,
+	success_user_file bool, success_user_path string, fail_user_file bool, fail_user_path string) bool
+```
+SubscribeUserToCalendar subscribes a groups of users to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*. <br>
+Depend on the setting, the function would generates two csv files with lists of successful and failed cases of user's calendar subscription. <br>
+The return boolean value indicates completion: true means process completed, false means process terminated due to error. This doesn't reflect the state of user subscription
+- *calendarid* can be retrived from Google Calendar => Calendar settings. 
+- *userlist_path* is the path of the cvs file with a list of users's emails, make sure the path ends with ".cvs" 
+- *success_user_file* (optional) should be true/false, indicating whether to generate a file that stores a list of users that successfully subscribe to calendars. Default is false.
+- *success_user_path* (optional) is the path that points at *success_user_file*. Default is "success_user_calendarid.csv" in current directory
+- *fail_user_file* (optional) should be true/false, indicating whether to generate a file that stores a list of users that successfully subscribe to calendars. Default is false.
+- *fail_user_path* (optional) is the path that points at *fail_user_file*. Default is "fail_user_calendarid.csv" in current directory
+
+Exp:
+```
+userlist_path:= "data/userlist.csv"
+calendarid:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
+success := calendarmod.SubscribeUserToCalendar(auth.Context(), auth.Config(), calendarid, userEmail)
+success_user_file := true
+success_user_path:= "data/success_users.csv"
+fail_user_file := true
+completed := calendarClient.SubscribeGroupToCalendar(userlist_path, calendarid, success_user_file, success_user_path, fail_user_file)
+```
+
 <br>
 <br>
 

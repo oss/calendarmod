@@ -17,19 +17,19 @@ type Subcal struct {
 
 // Subscribe user to dynamic calendar
 //
-//	@param {string} calendarID - of the calendar for subscription. Can be retrived from Google Calendar => Calendar settings.
+//	@param {string} calendarid - of the calendar for subscription. Can be retrived from Google Calendar => Calendar settings.
 //	@param {string} user - a valid google email address under the same domain of the Service Account client
 //	@return {bool} if success
-func (c *Client) SubscribeUserToCalendar(calendarID string, user string) bool {
+func (c *CalendarClient) SubscribeUserToCalendar(calendarid string, user string) bool {
 	log.Println("Subscribe User To Calendar...")
-	log.Printf("Calendar ID: %s\n", calendarID)
+	log.Printf("Calendar ID: %s\n", calendarid)
 	log.Printf("user: %s\n", user)
-	serviceClient := UserInitiateService(c.Context(), c.Config(), user)
+	serviceClient := UserInitiateService(c.ctx, c.config, user)
 	if serviceClient == nil {
 		log.Printf("Fail to initiate service client for the %s\n", user)
 		return false
 	}
-	calendarListEntry := GetCalendarListEntry(calendarID)
+	calendarListEntry := GetCalendarListEntry(calendarid)
 
 	// create CalendarListService for user
 	calendarListService := calendar.NewCalendarListService(serviceClient)
@@ -68,8 +68,8 @@ func UserInitiateService(ctx context.Context, config *jwt.Config, user string) *
 //
 //	@return {*calendar.CalendarListEntry}
 //	@param {string} canlendarID - calendar ID
-func GetCalendarListEntry(calendarID string) *calendar.CalendarListEntry {
-	n_Cle := &calendar.CalendarListEntry{Id: calendarID}
+func GetCalendarListEntry(calendarid string) *calendar.CalendarListEntry {
+	n_Cle := &calendar.CalendarListEntry{Id: calendarid}
 	return n_Cle
 }
 
