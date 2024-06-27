@@ -11,13 +11,13 @@ import (
 //	@param {string[]} userlist - list of valid Google emails of targeted users, in email format
 //	@param {string} calendarid - id of the calendar for the users to subscribe
 //	@paran {bool} success_user_file - (optional) whether to generate a file that stores a list of users that successfully subscribe to calendars
-//	@paran {string} success_user_path - (optional) path that points at success_user_file, default is "success_user_calendarid.csv" in current directory
+//	@paran {string} success_user_name - (optional) custume name for success_user_file, must be ".csv". Default is "success_user_calendarid.csv"
 //	@paran {bool} fail_user_file - (optional) whether to generate the file that stores a list of users that failed to subscribe to calendars
-//	@paran {string} fail_user_path - (optional)path to store FAILUSER_PATH,  default is current directory
+//	@paran {string} fail_user_name - (optional) custume name for fail_user_file, must be ".csv". Default is "fail_user_calendarid.csv"
 //
 //	@return {bool} if completed: true means process completed, false means process terminated due to error.
 func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist []string,
-	success_user_file bool, success_user_path string, fail_user_file bool, fail_user_path string) bool {
+	success_user_file bool, success_user_name string, fail_user_file bool, fail_user_name string) bool {
 
 	var successuserlist []string
 	var failuserlist []string
@@ -33,70 +33,88 @@ func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist []
 
 	// create successful user file
 	if success_user_file {
-
 		// check and set name to default
-		if success_user_path == "" {
-			success_user_path = "success_user_" + calendarid + ".csv"
+		if success_user_name == "" {
+			success_user_name = "success_user_" + calendarid + ".csv"
 		}
 
-		// Create the output file
-		successusercsv, err := os.Create(success_user_path)
-		if err != nil {
-			log.Printf("Unable to create output file: %v", err)
-		}
-		defer successusercsv.Close()
-
-		// Create a new CSV writer
-		writer := csv.NewWriter(successusercsv)
-		defer writer.Flush()
-
-		// Write header row
-		header := []string{"NetID"}
-		if err := writer.Write(header); err != nil {
-			log.Printf("Error writing header: %v", err)
-		}
-
-		// Write data rows
-		for _, netID := range successuserlist {
-			record := []string{netID}
-			if err := writer.Write(record); err != nil {
-				log.Printf("Error writing record: %v", err)
-			}
+		result := CreateOutputFile(success_user_name, successuserlist)
+		if !result {
+			log.Println("Error occured while trying to create success user file")
 		}
 	}
 
 	// create successful user file
 	if fail_user_file {
-
 		// check and set name to default
-		if fail_user_path == "" {
-			fail_user_path = "fail_user_" + calendarid + ".csv"
+		if fail_user_name == "" {
+			fail_user_name = "fail_user_" + calendarid + ".csv"
 		}
 
-		// Create the output file
-		failusercsv, err := os.Create(fail_user_path)
+		result := CreateOutputFile(fail_user_name, failuserlist)
+		if !result {
+			log.Println("Error occured while trying to create fail user file")
+		}
+	}
+
+	return true
+}
+
+func CreateOutputFile(filename string, userlist []string) bool {
+	output_folder := "outputs"
+
+	// Get the current working directory
+	originalDir, err := os.Getwd()
+	if err != nil {
+		log.Printf("Error getting current directory: %v\n", err)
+		return false
+	}
+
+	// Check if the folder already exists
+	if _, err := os.Stat(output_folder); os.IsNotExist(err) {
+		// Folder does not exist, so create it
+		err := os.Mkdir(output_folder, 0755)
 		if err != nil {
-			log.Printf("Unable to create output file: %v", err)
+			log.Printf("Error creating folder: %v\n", err)
+			return false
 		}
-		defer failusercsv.Close()
+		log.Printf("Folder '%s' created successfully.\n", output_folder)
+	} else {
+		log.Printf("Folder '%s' already exists.\n", output_folder)
+	}
 
-		// Create a new CSV writer
-		writer := csv.NewWriter(failusercsv)
-		defer writer.Flush()
+	// Create the output file
+	usercsv, err := os.Create(filename)
+	if err != nil {
+		log.Printf("Unable to create output file: %v", err)
+	}
+	defer usercsv.Close()
 
-		// Write header row
-		header := []string{"NetID"}
-		if err := writer.Write(header); err != nil {
-			log.Printf("Error writing header: %v", err)
+	// Create a new CSV writer
+	writer := csv.NewWriter(usercsv)
+	defer writer.Flush()
+
+	// Write header row
+	header := []string{"NetID"}
+	if err := writer.Write(header); err != nil {
+		log.Printf("Error writing header: %v", err)
+	}
+
+	// Write data rows
+	for _, netID := range userlist {
+		record := []string{netID}
+		if err := writer.Write(record); err != nil {
+			log.Printf("Error writing record: %v", err)
 		}
+	}
 
-		// Write data rows
-		for _, netID := range failuserlist {
-			record := []string{netID}
-			if err := writer.Write(record); err != nil {
-				log.Printf("Error writing record: %v", err)
-			}
-		}
+	log.Printf("Successfully generate File: %s", filename)
+
+	// Move back to the original directory
+	err = os.Chdir(originalDir)
+	if err != nil {
+		log.Printf("Error changing back to original directory: %v\n", err)
+		return false
 	}
 
 	return true
