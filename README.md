@@ -30,7 +30,7 @@
 
 ### Version Update
 Make sure you are using one of the stable version 
-- **v0.1.6**: first stable version 
+- **v0.1.7**: first stable version 
 
 
 <br>
@@ -119,11 +119,11 @@ auth := calendarmod.SetUpSVAAuth(serviceAccountJSON, true)
 
 #### func SubscribeUserToCalendar
 ```
-func (c *CalendarClient) SubscribeUserToCalendar(calendarid string, user string) bool 
+func (c *CalendarClient) SubscribeUserToCalendar(user string, calendarid string) bool 
 ```
 SubscribeUserToCalendar subscribes user to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*
-- *calendarid* can be retrived from Google Calendar => Calendar settings. 
 - *user* must be a a valid google email address under the same domain of the Service Account client. 
+- *calendarid* can be retrived from Google Calendar => Calendar settings. 
 
 Exp:
 ```
