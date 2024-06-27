@@ -30,7 +30,7 @@
 
 ### Version Update
 Make sure you are using one of the stable version. Update to the newest minor version. 
-- **v0.1.8**: first stable version 
+- **v0.1.9**: first stable version 
 
 
 <br>
@@ -132,7 +132,7 @@ userEmail:= "user@gmail.com"
 success := calendarmod.SubscribeUserToCalendar(calendarid, userEmail)
 ```
 
-#### func SubscribeUserToCalendar
+#### func SubscribeGroupToCalendar
 ```
 func (c *CalendarClient) SubscribeGroupToCalendar(userlist_path string, calendarid string,
 	success_user_file bool, success_user_name string, fail_user_file bool, fail_user_name string) bool
@@ -145,6 +145,7 @@ This function produces detailed CSV reports documenting the outcomes of user cal
 The return boolean value indicates completion: true means process completed, false means process terminated due to error. This doesn't reflect the state of user subscription
 - *calendarid* can be retrived from Google Calendar => Calendar settings. 
 - *userlist* is list of valid Google emails of targeted users, should be in email format 
+- *output_path* (optional) is relative path corresponding to current working directory to generate the output files. Defualt is current working directory  
 - *success_user_file* (optional) should be true/false, indicating whether to generate a file that stores a list of users that successfully subscribe to calendars. Default is false.
 - *success_user_name* (optional) is custume name for *success_user_file*, must be ".csv". Default is "success_user_calendarid.csv"
 - *fail_user_file* (optional) should be true/false, indicating whether to generate a file that stores a list of users that successfully subscribe to calendars. Default is false.

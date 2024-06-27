@@ -10,7 +10,7 @@ import (
 //
 //	@param {string[]} userlist - list of valid Google emails of targeted users, in email format
 //	@param {string} calendarid - id of the calendar for the users to subscribe
-//	@param {string} output_path - relative path to generate the output files
+//	@param {string} output_path - (optional) relative path to generate the output files. Defualt is current working directory
 //	@paran {bool} success_user_file - (optional) whether to generate a file that stores a list of users that successfully subscribe to calendars
 //	@paran {string} success_user_name - (optional) custume name for success_user_file, must be ".csv". Default is "success_user_calendarid.csv"
 //	@paran {bool} fail_user_file - (optional) whether to generate the file that stores a list of users that failed to subscribe to calendars
@@ -68,6 +68,10 @@ func CreateOutputFile(output_path string, filename string, userlist []string) bo
 	if err != nil {
 		log.Printf("Error getting current directory: %v\n", err)
 		return false
+	}
+
+	if output_path == "" {
+		output_path = originalDir
 	}
 
 	// Change the current working directory to the output path
