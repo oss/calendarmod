@@ -30,7 +30,7 @@
 
 ### Version Update
 Make sure you are using one of the stable version. Update to the newest minor version. 
-- **v0.1.12**: Recommanded stable version 
+- **v0.1.13**: Recommanded stable version 
 
 
 <br>
@@ -90,7 +90,7 @@ Make sure you are using one of the stable version. Update to the newest minor ve
 
 3. Subscribe the user to the calendars
     ```
-    success := client.SubscribeGroupToCalendar("users.csv", calendarid, true, "success_users.csv", true, "fail_users.csv")
+    success := client.SubscribeGroupToCalendar(calendarid, userlist)
     ```
 <br>
 <br>
@@ -138,28 +138,19 @@ func (c *CalendarClient) SubscribeGroupToCalendar(userlist_path string, calendar
 	success_user_file bool, success_user_name string, fail_user_file bool, fail_user_name string) bool
 ```
 SubscribeUserToCalendar subscribes a groups of users to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*. <br>
-This function produces detailed CSV reports documenting the outcomes of user calendar subscription attempts. Based on the configuration settings, it generates two separate files in the "outputs" directory in the project root
+This function produces two lists of user cases documenting the outcomes of user calendar subscription attempts. 
 1. A list of successful subscription cases
 2. A list of failed subscription attempts
 
 The return boolean value indicates completion: true means process completed, false means process terminated due to error. This doesn't reflect the state of user subscription
 - *calendarid* can be retrived from Google Calendar => Calendar settings. 
 - *userlist* is list of valid Google emails of targeted users, should be in email format 
-- *output_path* (optional) is relative path corresponding to current working directory to generate the output files. Defualt is current working directory  
-- *success_user_file* (optional) should be true/false, indicating whether to generate a file that stores a list of users that successfully subscribe to calendars. Default is false.
-- *success_user_name* (optional) is custume name for *success_user_file*, must be ".csv". Default is "success_user_calendarid.csv"
-- *fail_user_file* (optional) should be true/false, indicating whether to generate a file that stores a list of users that successfully subscribe to calendars. Default is false.
-- *fail_user_name* (optional) is custume name for *fail_user_file*, must be ".csv". Default is "fail_user_calendarid.csv"
 
 Exp:
 ```
 userlist:= ["a@gamil.com", "b@gamil.com", "c@gamil.com"]
 calendarid:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
-success := calendarmod.SubscribeUserToCalendar(auth.Context(), auth.Config(), calendarid, userEmail)
-success_user_file := true
-success_user_name:= "data/success_users.csv"
-fail_user_file := true
-completed := calendarClient.SubscribeGroupToCalendar(userlist, calendarid, success_user_file, success_user_name, fail_user_file)
+result := calendarClient.SubscribeGroupToCalendar(userlist, calendarid)
 ```
 
 <br>
