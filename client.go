@@ -18,6 +18,21 @@ type CalendarClient struct {
 	httpClient *http.Client
 }
 
+// Get Context
+func (c *CalendarClient) Context() context.Context {
+	return c.ctx
+}
+
+// Get Config
+func (c *CalendarClient) Config() *jwt.Config {
+	return c.config
+}
+
+// Get HttpClient
+func (c *CalendarClient) HttpClient() *http.Client {
+	return c.httpClient
+}
+
 // Initialize authentification client with service account to access Google API
 //
 //	@return {*CalendarClient}
