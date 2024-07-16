@@ -30,7 +30,7 @@
 
 ### Version Update
 Make sure you are using one of the stable version. Update to the newest minor version. 
-- **v0.1.13**: Recommanded stable version 
+- **v0.1.14**: Recommanded stable version 
 
 
 <br>

@@ -1,8 +1,18 @@
 package calendarmod
 
 type GroupSubResult struct {
-	successuserlist []string
-	failuserlist    []string
+	successUserList []string
+	failUserList    []string
+}
+
+// Get SuccessUserList
+func (gr GroupSubResult) SuccessUserList() []string {
+	return gr.successUserList
+}
+
+// Get FailUserList
+func (gr GroupSubResult) FailUserList() []string {
+	return gr.failUserList
 }
 
 // Subscribe group of user to group of calendar
@@ -18,9 +28,9 @@ func (c *CalendarClient) SubscribeGroupToCalendar(calendarid string, userlist []
 	for _, u := range userlist {
 		res := c.SubscribeUserToCalendar(u, calendarid)
 		if res {
-			gr.successuserlist = append(gr.successuserlist, u)
+			gr.successUserList = append(gr.successUserList, u)
 		} else {
-			gr.failuserlist = append(gr.failuserlist, u)
+			gr.failUserList = append(gr.failUserList, u)
 		}
 	}
 
