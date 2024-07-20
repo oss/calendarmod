@@ -40,8 +40,10 @@ func (c *CalendarClient) SubscribeUserToCalendar(user string, calendarid string)
 	_, err := calendarListService.Insert(calendarListEntry).Do()
 	if err != nil {
 		log.Println(err)
+		log.Println("Fail")
 		return false
 	}
+	log.Println("Success")
 	return true
 }
 
