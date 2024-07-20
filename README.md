@@ -221,8 +221,6 @@ result := calendarClient.SubscribeGroupToCalendar(userlist, calendarid)
     1. Make sure to enable all APIs included in the scope. <br> 
         Check access to "calendarservices.SetUpSVAAuth()", make sure all required scope has enabled  <br> 
         To enable API: Open the console left side menu => APIs & Services => Enable APIs & Services
-    
-
 <br>
 <br>
 
@@ -230,5 +228,5 @@ result := calendarClient.SubscribeGroupToCalendar(userlist, calendarid)
 ## Support
 For assistance, please contact us at sk2779@oit.rutgers.edu.
 
-Last updated by Seoli Kim on June 13, 2024.
+Last updated by Seoli Kim on July 20, 2024.
 
