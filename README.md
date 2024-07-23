@@ -30,7 +30,7 @@
 
 ### Version Update
 Make sure you are using one of the stable version. Update to the newest minor version. 
-- **v0.1.16**: Stable version
+- **v0.1.17**: Stable version
     1. Add unsubscription features for individual user and group
 - **v0.1.15**: Stable version 
 
@@ -137,7 +137,9 @@ success := calendarmod.SubscribeUserToCalendar(calendarID, userEmail)
 ```
 func (c *CalendarClient) UnsubscribeUserFromCalendar(user string, calendarid string) bool 
 ```
-UnsubscribeUserFromCalendar unsubscribes user from a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*
+UnsubscribeUserFromCalendar unsubscribes user from a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*.
+
+If a user is not subscribed to the calendar in the first place, no operation would be done and the function would return true. 
 - *user* must be a a valid google email address under the same domain of the Service Account client. 
 - *calendarID* can be retrived from Google Calendar => Calendar settings. 
 
@@ -152,7 +154,8 @@ success := calendarmod.UnsubscribeUserFromCalendar(calendarID, userEmail)
 ```
 func (c *CalendarClient) SubscribeGroupToCalendar(calendarID string, userlist []string) bool
 ```
-SubscribeUserToCalendar subscribes a groups of users to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*. <br>
+SubscribeUserToCalendar subscribes a groups of users to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*. 
+
 This function produces two lists of user cases documenting the outcomes of user calendar subscription attempts. 
 1. A list of successful subscription cases
 2. A list of failed subscription attempts
@@ -171,7 +174,10 @@ result := calendarClient.SubscribeGroupToCalendar(calendarID, userlist)
 ```
 func (c *CalendarClient) UnsubscribeGroupFromCalendar(calendarID string, userlist []string) bool
 ```
-UnsubscribeGroupFromCalendar unsubscribes a groups of users from a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*. <br>
+UnsubscribeGroupFromCalendar unsubscribes a groups of users from a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*. 
+
+If a user is not subscribed to the calendar in the first place, no operation would be done and the user would be added to successful user list. 
+
 This function produces two lists of user cases documenting the outcomes of user calendar subscription attempts. 
 1. A list of successful unsubscription cases
 2. A list of failed unsubscription attempts

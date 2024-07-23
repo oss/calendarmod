@@ -53,7 +53,7 @@ func (c *CalendarClient) SubscribeUserToCalendar(user string, calendarID string)
 //	@param {string} calendarID - of the calendar for subscription. Can be retrived from Google Calendar => Calendar settings.
 //	@return {bool} if success
 func (c *CalendarClient) UnsubscribeUserFromCalendar(user string, calendarID string) bool {
-	log.Println("Subscribe User To Calendar...")
+	log.Println("Unsubscribe User From Calendar...")
 	log.Printf("Calendar ID: %s\n", calendarID)
 	log.Printf("user: %s\n", user)
 	serviceClient := UserInitiateService(c.ctx, c.config, user)
@@ -68,7 +68,21 @@ func (c *CalendarClient) UnsubscribeUserFromCalendar(user string, calendarID str
 		log.Printf("The calendar Service for user: %s is null\n", user)
 		return false
 	}
-	err := calendarListService.Delete(calendarID).Do()
+
+	// check if user has subscribed to the calendar
+	calendar, err := calendarListService.Get(calendarID).Do()
+	if err != nil {
+		log.Println(err)
+		log.Println("Fail")
+		return false
+	}
+	if calendar == nil {
+		log.Printf("User %s is not subscribed to the calendar. \n", user)
+		return true
+	}
+
+	// delete
+	err = calendarListService.Delete(calendarID).Do()
 	if err != nil {
 		log.Println(err)
 		log.Println("Fail")
