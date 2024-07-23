@@ -7,6 +7,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/jwt"
 	"google.golang.org/api/calendar/v3"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 )
 
@@ -70,15 +71,17 @@ func (c *CalendarClient) UnsubscribeUserFromCalendar(user string, calendarID str
 	}
 
 	// check if user has subscribed to the calendar
-	calendar, err := calendarListService.Get(calendarID).Do()
+	_, err := calendarListService.Get(calendarID).Do()
 	if err != nil {
+		// Check if the error is due to the calendar not being found
+		if apiErr, ok := err.(*googleapi.Error); ok && apiErr.Code == 404 {
+			// Calendar not found, which means user is not subscribed
+			log.Printf("User %s is not subscribed to the calendar. \n", user)
+			return true
+		}
 		log.Println(err)
 		log.Println("Fail")
 		return false
-	}
-	if calendar == nil {
-		log.Printf("User %s is not subscribed to the calendar. \n", user)
-		return true
 	}
 
 	// delete

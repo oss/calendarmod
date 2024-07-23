@@ -30,7 +30,7 @@
 
 ### Version Update
 Make sure you are using one of the stable version. Update to the newest minor version. 
-- **v0.1.17**: Stable version
+- **v0.1.18**: Stable version
     1. Add unsubscription features for individual user and group
 - **v0.1.15**: Stable version 
 
