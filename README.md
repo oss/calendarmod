@@ -30,7 +30,9 @@
 
 ### Version Update
 Make sure you are using one of the stable version. Update to the newest minor version. 
-- **v0.1.15**: Recommanded stable version 
+- **v0.1.16**: Stable version
+    1. Add unsubscription features for individual user and group
+- **v0.1.15**: Stable version 
 
 <br>
 <br>
@@ -122,34 +124,66 @@ func (c *CalendarClient) SubscribeUserToCalendar(user string, calendarid string)
 ```
 SubscribeUserToCalendar subscribes user to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*
 - *user* must be a a valid google email address under the same domain of the Service Account client. 
-- *calendarid* can be retrived from Google Calendar => Calendar settings. 
+- *calendarID* can be retrived from Google Calendar => Calendar settings. 
 
 Exp:
 ```
-calendarid:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
+calendarID:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
 userEmail:= "user@gmail.com"
-success := calendarmod.SubscribeUserToCalendar(calendarid, userEmail)
+success := calendarmod.SubscribeUserToCalendar(calendarID, userEmail)
+```
+
+#### func UnsubscribeUserFromCalendar
+```
+func (c *CalendarClient) UnsubscribeUserFromCalendar(user string, calendarid string) bool 
+```
+UnsubscribeUserFromCalendar unsubscribes user from a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*
+- *user* must be a a valid google email address under the same domain of the Service Account client. 
+- *calendarID* can be retrived from Google Calendar => Calendar settings. 
+
+Exp:
+```
+calendarID:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
+userEmail:= "user@gmail.com"
+success := calendarmod.UnsubscribeUserFromCalendar(calendarID, userEmail)
 ```
 
 #### func SubscribeGroupToCalendar
 ```
-func (c *CalendarClient) SubscribeGroupToCalendar(userlist_path string, calendarid string,
-	success_user_file bool, success_user_name string, fail_user_file bool, fail_user_name string) bool
+func (c *CalendarClient) SubscribeGroupToCalendar(calendarID string, userlist []string) bool
 ```
 SubscribeUserToCalendar subscribes a groups of users to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*. <br>
 This function produces two lists of user cases documenting the outcomes of user calendar subscription attempts. 
 1. A list of successful subscription cases
 2. A list of failed subscription attempts
 
-The return boolean value indicates completion: true means process completed, false means process terminated due to error. This doesn't reflect the state of user subscription
-- *calendarid* can be retrived from Google Calendar => Calendar settings. 
+- *calendarID* can be retrived from Google Calendar => Calendar settings. 
 - *userlist* is list of valid Google emails of targeted users, should be in email format 
 
 Exp:
 ```
 userlist:= ["a@gamil.com", "b@gamil.com", "c@gamil.com"]
-calendarid:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
-result := calendarClient.SubscribeGroupToCalendar(userlist, calendarid)
+calendarID:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
+result := calendarClient.SubscribeGroupToCalendar(calendarID, userlist)
+```
+
+#### func UnsubscribeGroupFromCalendar
+```
+func (c *CalendarClient) UnsubscribeGroupFromCalendar(calendarID string, userlist []string) bool
+```
+UnsubscribeGroupFromCalendar unsubscribes a groups of users from a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*. <br>
+This function produces two lists of user cases documenting the outcomes of user calendar subscription attempts. 
+1. A list of successful unsubscription cases
+2. A list of failed unsubscription attempts
+
+- *calendarID* can be retrived from Google Calendar => Calendar settings. 
+- *userlist* is list of valid Google emails of targeted users, should be in email format 
+
+Exp:
+```
+userlist:= ["a@gamil.com", "b@gamil.com", "c@gamil.com"]
+calendarID:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
+result := calendarClient.UnsubscribeGroupFromCalendar(calendarID, userlist)
 ```
 
 <br>
@@ -228,5 +262,5 @@ result := calendarClient.SubscribeGroupToCalendar(userlist, calendarid)
 ## Support
 For assistance, please contact us at sk2779@oit.rutgers.edu.
 
-Last updated by Seoli Kim on July 20, 2024.
+Last updated by Seoli Kim on July 23, 2024.
 

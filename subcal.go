@@ -18,18 +18,18 @@ type Subcal struct {
 // Subscribe user to dynamic calendar
 //
 //	@param {string} user - a valid google email address under the same domain of the Service Account client
-//	@param {string} calendarid - of the calendar for subscription. Can be retrived from Google Calendar => Calendar settings.
+//	@param {string} calendarID - of the calendar for subscription. Can be retrived from Google Calendar => Calendar settings.
 //	@return {bool} if success
-func (c *CalendarClient) SubscribeUserToCalendar(user string, calendarid string) bool {
+func (c *CalendarClient) SubscribeUserToCalendar(user string, calendarID string) bool {
 	log.Println("Subscribe User To Calendar...")
-	log.Printf("Calendar ID: %s\n", calendarid)
+	log.Printf("Calendar ID: %s\n", calendarID)
 	log.Printf("user: %s\n", user)
 	serviceClient := UserInitiateService(c.ctx, c.config, user)
 	if serviceClient == nil {
 		log.Printf("Fail to initiate service client for the %s\n", user)
 		return false
 	}
-	calendarListEntry := GetCalendarListEntry(calendarid)
+	calendarListEntry := GetCalendarListEntry(calendarID)
 
 	// create CalendarListService for user
 	calendarListService := calendar.NewCalendarListService(serviceClient)
@@ -38,6 +38,37 @@ func (c *CalendarClient) SubscribeUserToCalendar(user string, calendarid string)
 		return false
 	}
 	_, err := calendarListService.Insert(calendarListEntry).Do()
+	if err != nil {
+		log.Println(err)
+		log.Println("Fail")
+		return false
+	}
+	log.Println("Success")
+	return true
+}
+
+// Unsubscribe user from dynamic calendar
+//
+//	@param {string} user - a valid google email address under the same domain of the Service Account client
+//	@param {string} calendarID - of the calendar for subscription. Can be retrived from Google Calendar => Calendar settings.
+//	@return {bool} if success
+func (c *CalendarClient) UnsubscribeUserFromCalendar(user string, calendarID string) bool {
+	log.Println("Subscribe User To Calendar...")
+	log.Printf("Calendar ID: %s\n", calendarID)
+	log.Printf("user: %s\n", user)
+	serviceClient := UserInitiateService(c.ctx, c.config, user)
+	if serviceClient == nil {
+		log.Printf("Fail to initiate service client for the %s\n", user)
+		return false
+	}
+
+	// create CalendarListService for user
+	calendarListService := calendar.NewCalendarListService(serviceClient)
+	if calendarListService == nil {
+		log.Printf("The calendar Service for user: %s is null\n", user)
+		return false
+	}
+	err := calendarListService.Delete(calendarID).Do()
 	if err != nil {
 		log.Println(err)
 		log.Println("Fail")
