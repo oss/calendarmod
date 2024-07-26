@@ -12,9 +12,8 @@
     2. [SubscribeUserToCalendar](#func-subscribeusertocalendar)
 5. [Google Cloud API](#google-cloud-api)
     1. [Set up Google Cloud API Access](#set-up-google-cloud-api-access)
-6. [Common Questions](#common-questions)
-7. [Troubleshoot](#troubleshoot)
-8. [Support](#support)
+6. [Questions and Errors](#questions_and_errors)
+7. [Support](#support)
 <br>
 <br>
 
@@ -24,8 +23,8 @@
 **calendarmod** is a Go Package designed to facilitate Google Calendar services for Rutgers University. This module includes the following core functionality:
 
 1. Authenticate Client for Google API using a service account
-2. Subscirbe user to a dynamic Google calendar
-3. Subscirbe a group of users to a dynamic Google calendar
+2. Subscribe/unsubscribe user to a dynamic Google calendar
+3. Subscribe/unsubscribe a group of users to a dynamic Google calendar
 
 
 ### Version Update
@@ -66,13 +65,15 @@ Make sure you are using one of the stable version. Update to the newest minor ve
     )
     ```
 
-2. Create a authentification client based on the service account
+2. Create an authentification client with the service account JSON file
     ```
     client := calendarmod.SetUpSVAClient(serviceAccountJSON, true)
     ```
 
-3. Subscribe the user to the calendars
+3. Subscribe the user to the calendar
     ```
+    calendarID:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
+    userEmail:= "user@gmail.com"
     success := client.SubscribeUserToCalendar(calendarid, userEmail)
     ```
 
@@ -84,14 +85,17 @@ Make sure you are using one of the stable version. Update to the newest minor ve
     )
     ```
 
-2. Create a authentification client based on the service account
+2. Create an authentification client with the service account JSON file
     ```
     client := calendarmod.SetUpSVAClient(serviceAccountJSON, true)
     ```
 
-3. Subscribe the user to the calendars
+3. Subscribe the group to the calendar
     ```
-    success := client.SubscribeGroupToCalendar(calendarid, userlist)
+    calendarID:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
+    userlist:= ["a@gamil.com", "b@gamil.com", "c@gamil.com"]
+    result := client.SubscribeGroupToCalendar(calendarID, userlist)
+    // result includes a list of successful cases and a list of failed cases
     ```
 <br>
 <br>
@@ -103,9 +107,9 @@ Make sure you are using one of the stable version. Update to the newest minor ve
 ```
 func SetUpSVAClient(serviceAccountJSON []byte, useCalendar bool) *CalendarClient
 ```
-SetUpSVAClient initialize authentification client with service account and returns CalendarClient with context and config. 
-- *useCalendar* should always to be set to true to use Calendar services. 
-- To authentificate, make sure to set up all necessary permissions for the Google Service account.
+SetUpSVAClient initializes an authentification client with the service account and returns CalendarClient with context and config. 
+- *useCalendar* should always be set to true to use Calendar services. 
+- To authenticate, make sure to set up all necessary permissions for the Google Service account.
 
 Exp:
 ```
@@ -115,27 +119,27 @@ if err != nil {
 	log.Fatalf("Could not read service account credentials file, %s => {%s}", sap, err)
 }
 
-auth := calendarmod.SetUpSVAAuth(serviceAccountJSON, true)
+calendarClient:= calendarmod.SetUpSVAAuth(serviceAccountJSON, true)
 ```
 
 #### func SubscribeUserToCalendar
 ```
-func (c *CalendarClient) SubscribeUserToCalendar(user string, calendarid string) bool 
+func (c *CalendarClient) SubscribeUserToCalendar(user string, calendarID string) bool 
 ```
 SubscribeUserToCalendar subscribes user to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*
-- *user* must be a a valid google email address under the same domain of the Service Account client. 
+- *user* must be a valid Google email address under the same domain as the Service Account client.
 - *calendarID* can be retrived from Google Calendar => Calendar settings. 
 
 Exp:
 ```
 calendarID:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
 userEmail:= "user@gmail.com"
-success := calendarmod.SubscribeUserToCalendar(calendarID, userEmail)
+success := calendarClient.SubscribeUserToCalendar(calendarID, userEmail)
 ```
 
 #### func UnsubscribeUserFromCalendar
 ```
-func (c *CalendarClient) UnsubscribeUserFromCalendar(user string, calendarid string) bool 
+func (c *CalendarClient) UnsubscribeUserFromCalendar(user string, calendarID string) bool 
 ```
 UnsubscribeUserFromCalendar unsubscribes user from a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*.
 
@@ -147,14 +151,14 @@ Exp:
 ```
 calendarID:= "c_d3e80545746779e9e3957248314356fe4d9e1dcc27c2259b8c029ad5ee6f9cdf@group.calendar.google.com"
 userEmail:= "user@gmail.com"
-success := calendarmod.UnsubscribeUserFromCalendar(calendarID, userEmail)
+success := calendarClient.UnsubscribeUserFromCalendar(calendarID, userEmail)
 ```
 
 #### func SubscribeGroupToCalendar
 ```
 func (c *CalendarClient) SubscribeGroupToCalendar(calendarID string, userlist []string) bool
 ```
-SubscribeUserToCalendar subscribes a groups of users to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*. 
+SubscribeUserToCalendar subscribes a group of users to a dynamic Google Calendar. Call the function with the Calendar Client created from *func SetUpSVAClient*. 
 
 This function produces two lists of user cases documenting the outcomes of user calendar subscription attempts. 
 1. A list of successful subscription cases
@@ -199,46 +203,51 @@ result := calendarClient.UnsubscribeGroupFromCalendar(calendarID, userlist)
 ## Google Cloud API
 
 ### Set up Google Cloud API Access
-1. Log in to Google Cloud Console [Google Cloud Console](https://console.cloud.google.com/)
+1. Log in to [Google Cloud Console](https://console.cloud.google.com/)
 2. Select the corresponding Google Cloud Project
     1. If the project isn't created yet, Click New Project to create one. 
     2. Project existed but doesn't show up. 
         1. Search it in the search bar
-        2. Couldn't find it. Refer to [*Google Cloud API Common Question*](#about-google-cloud-api)
+        2. Couldn't find it. Refer to [*Google API Common Question*](#about-google-cloud-api)
 3. Open the console left side menu => APIs & Services => Enable APIs & Services
 4. Enable required API
-    * Google Calender API (scope: https://www.googleapis.com/auth/calendar)s
+    * Google Calender API (scope: https://www.googleapis.com/auth/calendar)
 5. Open the console left side menu => IAM & Admin => Service accounts
 6. Select the corresponding Service Account
     * If the Service Account isn't created yet, Click + create a service account to create one.
     * For service account: Choose the role Project > owner.
-7. [Delegating domain-wide authority to the service account](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority)
-    - For OAuth scopes, enter: ttps://www.googleapis.com/auth/calendar
+7. Follow the [official guide from Google](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority) to delegate domain-wide authority to the service account
+    - For this project, in OAuth scopes, enter: https://www.googleapis.com/auth/calendar
 8. Click into the service account => KEYS => Add KEY => Create new key
-9. Create private key for "calendar service test", choose "JSON" for key type
-    - Save the JSON file in the projecr directory for authentification to the Service Account. 
+9. Create a private key for "calendar service test", choose "JSON" for the key type
+    - Save the JSON file in the project directory for Service Account authentification.
+
+
+### Manage project members
+1. Log in to [Google Cloud Console](https://console.cloud.google.com/)
+2. Select the corresponding Google Cloud Project
+3. Open the console left side menu => IAM & Admin => IAM
+4. Use *Grant Access* to add member and *Remove Access* to delete member
+    - New Principle: email address of the user
+    - Roles: assign desired role
 
 <br>
 <br>
 
 ---
 
-## Common Questions
+## Questions and Errors
 ### About Google Cloud API
 
-- **Q: Admin has created the project but I couldn't find it in my console.** 
+**Q: Admin has created the project but I couldn't find it in my console.** 
     
-    A: Check your access role to the project. Make sure you are a owner. 
-    If need to change access role, refer to [*Manage project members or change project ownership*](####Manage-project-members-or-change-project-ownership:)
+- A: Check your access role to the project. Make sure you are a owner. <br>
+    - To change access role to owner, ask the current owner of the project to add you to the project. 
+    - For details, refer to section [*Manage project members*](#manage-project-members). 
 
-<br>
-<br>
 
----
-
-## Troubleshoot
-
-- Error: Subscription: Authentification passed, couldn't fetch token
+**Error: Subscription: Authentification passed, couldn't fetch token**
+- Example error message:
 
     ```
     Authentification sets up
@@ -257,9 +266,9 @@ result := calendarClient.UnsubscribeGroupFromCalendar(calendarID, userlist)
     }
     ```
 
-    Solution: <br>
+- Solution: <br>
     1. Make sure to enable all APIs included in the scope. <br> 
-        Check access to "calendarservices.SetUpSVAAuth()", make sure all required scope has enabled  <br> 
+        - Check access to "calendarservices.SetUpSVAAuth()", make sure all required scope has enabled  <br> 
         To enable API: Open the console left side menu => APIs & Services => Enable APIs & Services
 <br>
 <br>
@@ -268,5 +277,5 @@ result := calendarClient.UnsubscribeGroupFromCalendar(calendarID, userlist)
 ## Support
 For assistance, please contact us at sk2779@oit.rutgers.edu.
 
-Last updated by Seoli Kim on July 23, 2024.
+Last updated by Seoli Kim on July 26, 2024.
 
